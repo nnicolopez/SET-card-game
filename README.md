@@ -2,7 +2,24 @@
 
 A proposed multiplayer web adaptation of SET, explored as a hands-on AWS learning project.
 
-**Status: discussion and documentation only.** There is no application code, infrastructure, deployment, or playable demo. Architecture diagrams describe alternatives, not existing systems.
+**Status: playable locally.** The rules engine and a local (same-screen) web client are implemented. No AWS infrastructure exists yet; the online version is the next step.
+
+## Run it
+
+```bash
+npm install
+npm run dev      # web client at http://localhost:5173
+npm test         # engine tests
+npm run build    # static bundle in apps/web/dist
+```
+
+## Repository layout
+
+| Path | Contents |
+| --- | --- |
+| `packages/engine` | Pure TypeScript rules and game state: cards, SET detection, `applyCommand` reducer, public view. No browser or AWS dependencies, so the future Lambda handlers reuse it as is. |
+| `apps/web` | React + Vite client. Talks to the game through a `GameClient` interface; today `LocalGameClient` runs the engine in the browser, later a WebSocket client will talk to AWS. |
+| `docs/` | Design notes and decisions. |
 
 ## Why this project?
 
@@ -39,16 +56,19 @@ Public matchmaking, rankings, chat, and accounts are outside the initial proposa
 
 ## Current decisions
 
-- Use a multiplayer SET web game as an AWS learning project.
-- Keep project documentation in English.
-- Maintain a public repository.
-- Discuss the idea before writing application or infrastructure code.
+- Multiplayer SET web game as an AWS learning project; public repo, English docs, MIT license.
+- **Backend:** Option A — API Gateway WebSocket + Lambda + DynamoDB.
+- **Claims (MVP):** submit three cards directly; no announce/reservation step. The first committed claim wins.
+- **State:** one DynamoDB item per game, updated with a conditional write on `version`.
+- **No SET on the board:** the server detects it and deals three more cards automatically.
+- **Identity (MVP):** guest players with a token stored in the browser; accounts later.
+- **Stack:** TypeScript everywhere; React + Vite frontend; AWS CDK (TypeScript) for infrastructure.
 
-**Not decided:** backend architecture, programming language, frontend framework, identity model, AWS region, budget, player limit, claim timing, deployment tooling, or implementation schedule.
+**Still open:** AWS region (`sa-east-1` latency vs. `us-east-1` cost), budget, room size limit, reservation flow for a later version.
 
-## Next discussion
+## Next step
 
-Choose the first learning objective and agree on the multiplayer interaction: announce SET before selecting cards, or submit three selected cards directly.
+Build one online room on AWS. See [Learning roadmap](docs/learning/README.md).
 
 ## References and attribution
 

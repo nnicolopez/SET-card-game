@@ -2,7 +2,7 @@
 
 [Back to project overview](../../README.md)
 
-**Discussion draft. Neither architecture has been selected or implemented.** The diagrams show logical responsibilities, not complete deployment specifications.
+**Selected: Option A** (API Gateway WebSocket + Lambda + DynamoDB), for its learning value. Not deployed yet. The diagrams show logical responsibilities, not complete deployment specifications.
 
 ## Option A: API Gateway WebSocket + Lambda + DynamoDB
 
@@ -69,7 +69,12 @@ S3 with CloudFront is one possible hosting approach. Amplify Hosting is another 
 | Who restores a disconnected player? | Application snapshot/recovery flow | Application snapshot/recovery flow |
 | Main learning emphasis | Connections, Lambda routes, and orchestration | Managed channels and event integration |
 
-**Initial suggestion, not a decision:** start the discussion with Option A because its components expose several transferable AWS concepts. Choose Option B if reducing messaging plumbing becomes the stronger goal.
+**Decision:** Option A, because its components expose several transferable AWS concepts. Option B remains a reasonable alternative if messaging plumbing becomes the bottleneck.
+
+Operational notes for Option A:
+
+- `PostToConnection` to a closed connection returns `GoneException` (HTTP 410); delete that connection record as part of the fan-out.
+- API Gateway closes WebSocket connections after an idle timeout and a maximum connection duration, so reconnecting is a normal path, not an edge case. Check current limits before designing heartbeats.
 
 ## Before choosing
 

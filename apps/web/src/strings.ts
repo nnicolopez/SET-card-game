@@ -1,0 +1,48 @@
+import type { Color, CommandError, Shading, Shape } from '@set/engine';
+
+// UI copy lives here so the game can be translated later. Code and docs stay in English.
+export const t = {
+  title: 'SET',
+  subtitle: 'Encontrá tres cartas donde cada atributo sea igual en las tres o distinto en las tres.',
+  playersLabel: 'Jugadores',
+  playerPlaceholder: (n: number) => `Jugador ${n}`,
+  addPlayer: 'Agregar jugador',
+  removePlayer: (name: string) => `Sacar a ${name}`,
+  start: 'Empezar partida',
+  localNote: 'Modo local: todos juegan en la misma pantalla. El modo online llega con AWS.',
+  deck: (n: number) => `${n} en el mazo`,
+  setsOnBoard: (n: number) => (n === 1 ? '1 SET en la mesa' : `${n} SETs en la mesa`),
+  whoFound: '¿Quién lo encontró?',
+  cancel: 'Cancelar',
+  hint: 'Pista',
+  showHelp: 'Ayudas',
+  colorLetters: 'Letra de color',
+  newGame: 'Nueva partida',
+  rematch: 'Revancha',
+  finished: 'Se terminó el mazo',
+  winner: (names: string[]) => (names.length > 1 ? `Empate: ${names.join(', ')}` : `Ganó ${names[0]}`),
+  setFound: (name: string) => `¡SET de ${name}! +1`,
+  setInvalid: (name: string, penalty: number) => `No era SET, ${name} −${penalty}`,
+  extraDealt: (n: number) => `No había SET: se agregaron ${n} cartas`,
+  rules:
+    'Número, forma, color y relleno: cada uno tiene que ser igual en las tres cartas o distinto en las tres. Si dos coinciden y una no, no es SET.',
+  keyboardHint: 'Esc deselecciona',
+  error: {
+    UNKNOWN_PLAYER: 'Jugador desconocido',
+    ALREADY_JOINED: 'Ese jugador ya está',
+    GAME_FULL: 'La partida está llena',
+    INVALID_NAME: 'Nombre inválido',
+    GAME_NOT_IN_LOBBY: 'La partida ya empezó',
+    GAME_NOT_PLAYING: 'La partida no está en juego',
+    INVALID_SELECTION: 'Elegí tres cartas distintas',
+    CARDS_NOT_ON_BOARD: 'Alguien se te adelantó',
+  } satisfies Record<CommandError, string>,
+  shape: {
+    oval: (n: number) => (n === 1 ? 'óvalo' : 'óvalos'),
+    diamond: (n: number) => (n === 1 ? 'rombo' : 'rombos'),
+    squiggle: (n: number) => (n === 1 ? 'onda' : 'ondas'),
+  } satisfies Record<Shape, (n: number) => string>,
+  color: { red: 'rojo', green: 'verde', purple: 'violeta' } satisfies Record<Color, string>,
+  colorLetter: { red: 'R', green: 'V', purple: 'P' } satisfies Record<Color, string>,
+  shading: { solid: 'lleno', striped: 'rayado', outlined: 'vacío' } satisfies Record<Shading, string>,
+};

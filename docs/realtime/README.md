@@ -2,7 +2,19 @@
 
 [Back to project overview](../../README.md)
 
-**Proposed behavior for discussion, not an implementation specification.** Transporting messages quickly and deciding which action is valid are separate problems.
+Transporting messages quickly and deciding which action is valid are separate problems.
+
+## MVP protocol (implemented in `packages/engine`)
+
+- Clients send `claim` with three card IDs and a unique `requestId`. There is no announce/reservation step in the MVP.
+- A claim is valid if the three cards are still on the board and form a SET. It is checked against the cards, not against a client-sent version: an unrelated change (another player's wrong claim changing scores) must not invalidate a good claim.
+- If any card is already gone, the result is `CARDS_NOT_ON_BOARD` with no penalty ("someone got there first"). A wrong SET costs one point.
+- `applyCommand` is a pure reducer. Each accepted command increments `version`; rejected commands change nothing.
+- The server-side race is resolved by the database: the handler reads the game item, applies the command, and writes with `ConditionExpression: version = :readVersion`. On a conflict it re-reads and re-applies; if the cards are gone by then, the second claimer gets `CARDS_NOT_ON_BOARD`.
+- Accepted `requestId`s are remembered (last 64) inside the game item, so a retried command is not applied twice.
+- Clients only ever receive `toPublicState`, which omits the deck order.
+
+The reservation flow below is kept as a design for a possible later version.
 
 ## One authoritative game state
 

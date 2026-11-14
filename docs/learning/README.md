@@ -2,7 +2,7 @@
 
 [Back to project overview](../../README.md)
 
-The project begins with discussion. This is a learning path, not an approved implementation plan or a delivery schedule.
+Discussion is done for the MVP; the local game is implemented. This is a learning path, not a delivery schedule.
 
 ## Suggested progression
 
@@ -16,7 +16,7 @@ flowchart TD
     Recovery --> Operations[Later: costs, monitoring, deployment, and cleanup]
 ```
 
-Only the first two stages are in scope now. Later stages require a decision to start implementation.
+Done: discussion, architecture choice, local rules and board. Next: one shared online room.
 
 ## Concepts and tangible outcomes
 
@@ -46,14 +46,16 @@ Only the first two stages are in scope now. Later stages require a decision to s
 | --- | --- | --- |
 | Purpose | Confirmed | Learn AWS through a multiplayer SET web project |
 | Repository | Confirmed | Public, with English documentation |
-| Current stage | Confirmed | Discussion only; no code |
-| Real-time backend | Open | Compare API Gateway WebSocket and AppSync Events |
-| Claim interaction | Open | Reservation-first proposed; direct submission alternative |
-| Language and frontend | Open | No stack selected |
-| Accounts and guests | Open | Define identity and room authorization |
-| Region and budget | Open | Decide before provisioning |
-| Infrastructure tooling | Open | Discuss after architectural choice |
-| Licensing | Open | No license selected yet |
+| Current stage | Confirmed | Local game implemented (`packages/engine`, `apps/web`) |
+| Real-time backend | Confirmed | Option A: API Gateway WebSocket + Lambda + DynamoDB |
+| Claim interaction | Confirmed (MVP) | Submit three cards directly; reservation flow may come later |
+| Data model | Confirmed (MVP) | One game item, conditional write on `version` |
+| No SET available | Confirmed | Server deals three more cards automatically |
+| Language and frontend | Confirmed | TypeScript; React + Vite |
+| Accounts and guests | Confirmed (MVP) | Guest token in the browser; accounts later |
+| Infrastructure tooling | Confirmed | AWS CDK in TypeScript |
+| Licensing | Confirmed | MIT |
+| Region and budget | Open | Compare `sa-east-1` and `us-east-1` before provisioning |
 
 ## Later operational discussion
 
@@ -61,6 +63,10 @@ Before any deployment, identify cost drivers such as active connection time, mes
 
 Use a dedicated learning environment, narrowly scoped permissions, and a documented cleanup process when implementation begins. No AWS resources are created by this repository at this stage.
 
-## First conversation to have
+## Next milestone: one online room
 
-Which part would be most valuable to learn first: deploying a web application, connecting AWS services, or understanding how simultaneous multiplayer actions are coordinated?
+1. AWS account hygiene: dedicated IAM user/role, MFA, budget alert, chosen region.
+2. CDK app with a DynamoDB table and an API Gateway WebSocket API (`$connect`, `$disconnect`, `command`).
+3. Lambda handler: read game item → `applyCommand` from `@set/engine` → conditional put on `version` → retry on conflict → broadcast `toPublicState` with `PostToConnection` (delete connections that return `GoneException`).
+4. `WebSocketGameClient` in `apps/web` implementing the existing `GameClient` interface.
+5. S3 + CloudFront hosting for `apps/web/dist`.
